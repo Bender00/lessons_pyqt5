@@ -9,6 +9,7 @@
 
 
 from PyQt5 import QtCore, QtGui, QtWidgets
+from PyQt5.QtWidgets import QMessageBox
 
 
 class Ui_MainWindow(object):
@@ -26,7 +27,7 @@ class Ui_MainWindow(object):
         font.setWeight(75)
         self.label_rezult.setFont(font)
         self.label_rezult.setStyleSheet("background-color: rgb(169, 166, 170);\n"
-"color: rgb(46, 52, 54);")
+        "color: rgb(46, 52, 54);")
         self.label_rezult.setObjectName("label_rezult")
         self.btn_zero = QtWidgets.QPushButton(self.centralwidget)
         self.btn_zero.setGeometry(QtCore.QRect(0, 290, 121, 80))
@@ -223,9 +224,32 @@ class Ui_MainWindow(object):
             self.label_rezult.setText(self.label_rezult.text() + number)
 
     def results(self):
-        res = eval(self.label_rezult.text())
-        self.label_rezult.setText("Результат: " + str(res))
-        self.is_equal = True
+        if not self.is_equal:
+            res = eval(self.label_rezult.text())
+            self.label_rezult.setText("Результат: " + str(res))
+            self.is_equal = True
+        else:
+            error = QMessageBox()
+            error.setWindowTitle("Помилка")
+            error.setText("Зараз виконати дію неможливо!")
+            error.setIcon(QMessageBox.Warning)
+            error.setStandardButtons(QMessageBox.Reset|QMessageBox.Cancel|QMessageBox.Ok)
+
+            # добавлення по стандарту підсвічуваної кнопки
+            error.setDefaultButton(QMessageBox.Ok)
+            error.setInformativeText("Два рази дію не виконати")
+            error.setDetailedText("Деталі")
+
+            error.buttonClicked.connect(self.popup_action)
+
+            error.exec_()
+
+    def popup_action(self, btn):
+        if btn.text() == "Ok" :
+            print("print Ok")
+        elif btn.text() == "Reset":
+            self.label_rezult.setText("")
+            self.is_equal = False
 
 if __name__ == "__main__":
     import sys
